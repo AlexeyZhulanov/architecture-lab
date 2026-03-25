@@ -1,0 +1,57 @@
+services:
+  # 1. База данных в оперативной памяти для Очереди задач
+  redis:
+    image: redis:7-alpine
+    container_name: pipe_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 2. Наш API и балансировщик нагрузки
+  backend:
+    build:
+      context: ./backend
+    container_name: pipe_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: always
+
+  # 3. Вычислительный узел с нейросетью
+  worker:
+    build:
+      context: ./worker
+    container_name: pipe_worker
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - backend
+    # Прокидываем видеокарту внутрь контейнера
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: always
+
+  # 4. Telegram-бот
+  bot:
+    build:
+      context: ./bot
+    container_name: pipe_bot
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - backend
+    restart: always
