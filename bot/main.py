@@ -9,12 +9,33 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 # URL FastAPI балансировщика (внутри Docker)
-BACKEND_URL = "http://backend:8000/process-image/"
+BACKEND_URL = "http://backend:8000"
 
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет! Я система детекции дефектов труб. Отправь мне фото, и я проверю его на трещины и засоры.")
+    await message.answer(
+        "Привет! Я система детекции дефектов труб.\n\n"
+        "Отправь мне фото, и я проверю его на трещины и засоры.\n"
+        "Для просмотра статистики системы используй команду /stats"
+    )
+
+
+@dp.message(Command("stats"))
+async def cmd_stats(message: types.Message):
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(f"{BACKEND_URL}/stats") as response:
+                stats = await response.json()
+                text = (
+                    f"📊 <b>Статистика инфраструктуры:</b>\n\n"
+                    f"📸 Обработано запросов: <b>{stats['total_requests']}</b>\n"
+                    f"⏳ Ожидают дообучения: <b>{stats['pending_images']}</b> шт.\n"
+                    f"🔄 Циклов дообучения (Continuous Learning): <b>{stats['retrain_cycles']}</b>"
+                )
+                await message.answer(text, parse_mode="HTML")
+        except Exception:
+            await message.answer("Ошибка связи с сервером статистики.")
 
 
 @dp.message(F.photo)
@@ -32,7 +53,7 @@ async def handle_photo(message: types.Message):
         data.add_field('file', downloaded_file, filename=f"user_{message.from_user.id}_{message.message_id}.jpg")
 
         # Делаем POST запрос к FastAPI
-        url_with_user = f"{BACKEND_URL}?user_id={message.from_user.id}"
+        url_with_user = f"{BACKEND_URL}/process-image/?user_id={message.from_user.id}"
         try:
             async with session.post(url_with_user, data=data) as response:
                 resp_json = await response.json()
@@ -48,12 +69,32 @@ async def process_feedback(callback: types.CallbackQuery):
 
     # Отправляем фидбек на бэкенд
     async with aiohttp.ClientSession() as session:
-        await session.post("http://backend:8000/feedback", json={"file_id": file_id, "confirmed": confirmed})
+        await session.post(f"{BACKEND_URL}/feedback", json={"file_id": file_id, "confirmed": confirmed})
 
     # Редактируем сообщение, убирая кнопки
     text = "✅ Спасибо! Данные будут использованы для улучшения модели." if confirmed else "❌ Понял, ложное срабатывание."
     await callback.message.edit_caption(caption=text, reply_markup=None)
     await callback.answer()
+
+
+# Если прислали картинку как "Документ/Файл"
+@dp.message(F.document)
+async def handle_document(message: types.Message):
+    await message.answer("Пожалуйста, отправляйте изображения именно как «Фото», а не как файл. Так мне проще их обрабатывать!")
+
+# Если прислали текст
+@dp.message(F.text)
+async def handle_text(message: types.Message):
+    await message.answer(
+        "Я — автоматизированная система компьютерного зрения. 🤖\n"
+        "Я не умею поддерживать беседу. Моя задача — искать дефекты на трубах.\n\n"
+        "Пожалуйста, отправьте мне фотографию или нажмите /stats."
+    )
+
+# Если прислали стикер, кружочек, аудио, локацию и т.д.
+@dp.message(~F.photo & ~F.text & ~F.document)
+async def handle_other(message: types.Message):
+    await message.answer("Извините, я понимаю только фотографии. 📸")
 
 
 async def main():

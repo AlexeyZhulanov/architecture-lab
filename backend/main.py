@@ -94,3 +94,31 @@ async def handle_feedback(data: dict = Body(...)):
 
         logging.info(f"FEEDBACK - User rejected {file_id}. All temp files cleaned.")
         return {"status": "ignored_and_cleaned"}
+
+
+@app.get("/stats")
+async def get_stats():
+    # Считаем общее количество запросов по логам
+    total_requests = 0
+    log_path = '/app/logs/system_load.log'
+    if os.path.exists(log_path):
+        with open(log_path, 'r', encoding='utf-8') as f:
+            total_requests = sum(1 for line in f if "NEW_REQUEST" in line)
+
+    # Считаем подтвержденные дефекты (которые ждут дообучения)
+    pending_images = 0
+    if os.path.exists(NEW_DATA_IMG):
+        pending_images = len(
+            [name for name in os.listdir(NEW_DATA_IMG) if os.path.isfile(os.path.join(NEW_DATA_IMG, name))])
+
+    # Считаем количество завершенных циклов дообучения (папки в архиве)
+    retrain_cycles = 0
+    archive_dir = "/app/data/archive"
+    if os.path.exists(archive_dir):
+        retrain_cycles = len([name for name in os.listdir(archive_dir) if os.path.isdir(os.path.join(archive_dir, name))])
+
+    return {
+        "total_requests": total_requests,
+        "pending_images": pending_images,
+        "retrain_cycles": retrain_cycles
+    }
