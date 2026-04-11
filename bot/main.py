@@ -41,6 +41,21 @@ async def handle_photo(message: types.Message):
             await message.answer("Ошибка связи с вычислительным сервером.")
 
 
+@dp.callback_query(F.data.startswith("confirm") | F.data.startswith("reject"))
+async def process_feedback(callback: types.CallbackQuery):
+    action, file_id = callback.data.split("|")
+    confirmed = (action == "confirm")
+
+    # Отправляем фидбек на бэкенд
+    async with aiohttp.ClientSession() as session:
+        await session.post("http://backend:8000/feedback", json={"file_id": file_id, "confirmed": confirmed})
+
+    # Редактируем сообщение, убирая кнопки
+    text = "✅ Спасибо! Данные будут использованы для улучшения модели." if confirmed else "❌ Понял, ложное срабатывание."
+    await callback.message.edit_caption(caption=text, reply_markup=None)
+    await callback.answer()
+
+
 async def main():
     print("Бот запущен...")
     await dp.start_polling(bot)
