@@ -22,4 +22,4 @@ COPY . .
 # Запускаем Celery worker.
 # --concurrency=1 означает, что 1 воркер берет строго 1 картинку за раз.
 # Это защита видеокарты от переполнения памяти (OOM - Out of Memory).
-CMD ["celery", "-A", "tasks", "worker", "--loglevel=info", "--concurrency=1"]
+CMD ["celery", "-A", "tasks", "worker", "--beat", "--loglevel=info", "--concurrency=1"]

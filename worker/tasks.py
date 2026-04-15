@@ -2,10 +2,25 @@ import os
 import requests
 import json
 from celery import Celery
+from celery.schedules import crontab
 from ultralytics import YOLO
+from continual_learning import run_continual_learning
 
 # Подключаемся к очереди
 app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
+
+# Настройка планировщика
+app.conf.beat_schedule = {
+    'check-for-retraining-every-10-minutes': {
+        'task': 'check_and_retrain',
+        'schedule': crontab(minute='*/10'), # Запуск каждые 10 минут
+    },
+}
+
+@app.task(name='check_and_retrain')
+def check_and_retrain():
+    """Эта задача вызывается по расписанию и запускает процесс проверки новых данных"""
+    run_continual_learning()
 
 # Загружаем модель один раз при старте контейнера, чтобы не тратить время на каждую картинку
 MODEL_PATH = '/app/data/weights/yolov8s_pipe.pt'
