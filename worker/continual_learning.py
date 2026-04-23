@@ -1,8 +1,9 @@
 import os
 import shutil
 import yaml
-from ultralytics import YOLO
+import random
 import logging
+from ultralytics import YOLO
 from datetime import datetime
 
 # Настройка логирования
@@ -13,9 +14,11 @@ logging.basicConfig(
 )
 
 # Пути внутри Docker-контейнера
-NEW_DATA_DIR = '/app/data/new_data'
-IMAGES_DIR = os.path.join(NEW_DATA_DIR, 'images')
-LABELS_DIR = os.path.join(NEW_DATA_DIR, 'labels')
+STAGING_DIR = '/app/data/new_data'
+STAGING_IMG = os.path.join(STAGING_DIR, 'images')
+STAGING_LBL = os.path.join(STAGING_DIR, 'labels')
+
+TEMP_TRAIN_DIR = '/app/data/temp_train' # Временная папка для правильного разбиения
 WEIGHTS_PATH = '/app/data/weights/yolov8s_pipe.pt'
 ARCHIVE_DIR = '/app/data/archive'
 
@@ -23,29 +26,73 @@ ARCHIVE_DIR = '/app/data/archive'
 THRESHOLD = 5
 
 
-def create_yaml_for_training():
+def create_yaml_for_training(base_path):
     """Создает временный data.yaml для новых данных"""
-    yaml_path = os.path.join(NEW_DATA_DIR, 'retrain_data.yaml')
-    # todo Сделать правильную структуру, пока что это заглушка
+    yaml_path = os.path.join(base_path, 'retrain_data.yaml')
     data = {
-        'path': NEW_DATA_DIR,
-        'train': 'images',
-        'val': 'images',
-        'names': {0: 'defect'}
+        'path': base_path,
+        'train': 'train/images',
+        'val': 'val/images',
+        'names': {
+            0: 'buckling',
+            1: 'crack',
+            2: 'debris',
+            3: 'hole',
+            4: 'jntoffs',
+            5: 'obsc',
+            6: 'utits'
+        }
     }
     with open(yaml_path, 'w') as f:
         yaml.dump(data, f)
     return yaml_path
 
 
-def archive_used_data():
-    """Переносит отработанные данные в архив, чтобы не обучать на них повторно"""
+def prepare_split_data(images_list):
+    """Создает структуру train/val и распределяет файлы 80/20"""
+    # Создаем структуру папок
+    for split in ['train', 'val']:
+        os.makedirs(os.path.join(TEMP_TRAIN_DIR, split, 'images'), exist_ok=True)
+        os.makedirs(os.path.join(TEMP_TRAIN_DIR, split, 'labels'), exist_ok=True)
+
+    # Перемешиваем список для случайного разбиения
+    random.shuffle(images_list)
+
+    # Считаем сколько файлов пойдет в валидацию (минимум 1, либо 20%)
+    val_count = max(1, int(len(images_list) * 0.2))
+
+    val_files = images_list[:val_count]
+    train_files = images_list[val_count:]
+
+    def copy_files(file_list, split_name):
+        for img_name in file_list:
+            lbl_name = img_name.rsplit('.', 1)[0] + '.txt'
+
+            src_img = os.path.join(STAGING_IMG, img_name)
+            src_lbl = os.path.join(STAGING_LBL, lbl_name)
+
+            dst_img = os.path.join(TEMP_TRAIN_DIR, split_name, 'images', img_name)
+            dst_lbl = os.path.join(TEMP_TRAIN_DIR, split_name, 'labels', lbl_name)
+
+            shutil.copy(src_img, dst_img)
+            if os.path.exists(src_lbl):
+                shutil.copy(src_lbl, dst_lbl)
+
+    copy_files(train_files, 'train')
+    copy_files(val_files, 'val')
+
+    logging.info(f"RETRAINING - Data split: {len(train_files)} train, {len(val_files)} val.")
+
+
+def archive_and_cleanup():
+    """Архивирует исходники из new_data и удаляет временную папку temp_train"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     archive_folder = os.path.join(ARCHIVE_DIR, f"batch_{timestamp}")
     os.makedirs(archive_folder, exist_ok=True)
 
+    # Переносим оригиналы в архив
     for folder in ['images', 'labels']:
-        src = os.path.join(NEW_DATA_DIR, folder)
+        src = os.path.join(STAGING_DIR, folder)
         dst = os.path.join(archive_folder, folder)
         shutil.copytree(src, dst)
 
@@ -53,16 +100,17 @@ def archive_used_data():
         for file in os.listdir(src):
             os.remove(os.path.join(src, file))
 
+    # Удаляем временную папку для обучения
+    if os.path.exists(TEMP_TRAIN_DIR):
+        shutil.rmtree(TEMP_TRAIN_DIR)
+
 
 def run_continual_learning():
-    # Проверяем, есть ли папки
-    if not os.path.exists(IMAGES_DIR) or not os.path.exists(LABELS_DIR):
-        os.makedirs(IMAGES_DIR, exist_ok=True)
-        os.makedirs(LABELS_DIR, exist_ok=True)
+    if not os.path.exists(STAGING_IMG) or not os.path.exists(STAGING_LBL):
         return
 
     # Считаем количество новых изображений
-    images = [f for f in os.listdir(IMAGES_DIR) if f.endswith(('.jpg', '.png'))]
+    images = [f for f in os.listdir(STAGING_IMG) if f.endswith(('.jpg', '.png'))]
 
     if len(images) < THRESHOLD:
         print(f"Недостаточно данных для дообучения. Текущее количество: {len(images)}/{THRESHOLD}")
@@ -71,8 +119,11 @@ def run_continual_learning():
     logging.info(f"RETRAINING - Started auto-retraining on {len(images)} new images.")
     print(f"Начинаем дообучение на {len(images)} новых файлах...")
 
-    # Создаем конфиг
-    yaml_path = create_yaml_for_training()
+    # Готовим данные (сплит train/val)
+    prepare_split_data(images)
+
+    # Создаем конфиг в корне временной папки
+    yaml_path = create_yaml_for_training(TEMP_TRAIN_DIR)
 
     # Загружаем текущую модель
     if not os.path.exists(WEIGHTS_PATH):
@@ -89,7 +140,9 @@ def run_continual_learning():
         batch=2,  # Маленький батч для маленького датасета
         device=0,
         workers=0,
-        name='retrain_run'
+        project='runs/detect',
+        name='retrain_run',
+        exist_ok=True  # Перезапись папки при следующих дообучениях
     )
 
     # Обновляем веса в рабочей папке
@@ -99,11 +152,7 @@ def run_continual_learning():
         logging.info("RETRAINING - Successfully updated production weights.")
 
     # Убираем данные в архив
-    archive_used_data()
-
-    # Удаляем временный yaml
-    if os.path.exists(yaml_path):
-        os.remove(yaml_path)
+    archive_and_cleanup()
 
     print("Дообучение завершено! Модель обновлена.")
 
