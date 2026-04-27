@@ -31,7 +31,8 @@ async def cmd_stats(message: types.Message):
                     f"📊 <b>Статистика инфраструктуры:</b>\n\n"
                     f"📸 Обработано запросов: <b>{stats['total_requests']}</b>\n"
                     f"⏳ Ожидают дообучения: <b>{stats['pending_images']}</b> шт.\n"
-                    f"🔄 Циклов дообучения (Continuous Learning): <b>{stats['retrain_cycles']}</b>"
+                    f"🔄 Пройдено циклов дообучения: <b>{stats['retrain_cycles']}</b>\n"
+                    f"⚠️ В карантине (ждут ручной разметки): <b>{stats['quarantine_items']}</b> шт."
                 )
                 await message.answer(text, parse_mode="HTML")
         except Exception:
@@ -62,17 +63,22 @@ async def handle_photo(message: types.Message):
             await message.answer("Ошибка связи с вычислительным сервером.")
 
 
-@dp.callback_query(F.data.startswith("confirm") | F.data.startswith("reject"))
+@dp.callback_query(F.data.contains("|"))
 async def process_feedback(callback: types.CallbackQuery):
-    action, file_id = callback.data.split("|")
-    confirmed = (action == "confirm")
+    status, file_id = callback.data.split("|")
 
     # Отправляем фидбек на бэкенд
     async with aiohttp.ClientSession() as session:
-        await session.post(f"{BACKEND_URL}/feedback", json={"file_id": file_id, "confirmed": confirmed})
+        await session.post(f"{BACKEND_URL}/feedback", json={"file_id": file_id, "status": status})
 
     # Редактируем сообщение, убирая кнопки
-    text = "✅ Спасибо! Данные будут использованы для улучшения модели." if confirmed else "❌ Понял, ложное срабатывание."
+    if status == "confirm":
+        text = "✅ Данные отправлены на дообучение."
+    elif status == "reject":
+        text = "❌ Записано как ложное срабатывание (будет использовано как Background Image)."
+    else:
+        text = "⚠️ Файл помещен в карантин для последующей ручной разметки."
+
     await callback.message.edit_caption(caption=text, reply_markup=None)
     await callback.answer()
 

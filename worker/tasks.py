@@ -60,16 +60,17 @@ def process_pipe_defect(file_path, user_id):
 
     # Кодируем callback_data: действие|ID_файла
     keyboard = {
-        "inline_keyboard": [[
-            {"text": "✅ Верно", "callback_data": f"confirm|{file_id}"},
-            {"text": "❌ Ошибка", "callback_data": f"reject|{file_id}"}
-        ]]
+        "inline_keyboard": [
+            [{"text": "✅ Верно", "callback_data": f"confirm|{file_id}"}],
+            [{"text": "⚠️ Неточная рамка", "callback_data": f"inaccurate|{file_id}"}],
+            [{"text": "❌ Ложное срабатывание", "callback_data": f"reject|{file_id}"}]
+        ]
     }
 
     with open(res_img_path, 'rb') as photo:
         requests.post(url, data={
             'chat_id': user_id,
-            'caption': "Проверьте результат детекции:",
+            'caption': "Результат детекции. Пожалуйста, подтвердите качество разметки:",
             'reply_markup': json.dumps(keyboard)
         }, files={'photo': photo})
 

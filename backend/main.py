@@ -22,6 +22,7 @@ MAX_ACTIVE_TASKS = 5
 TEMP_DIR = "/app/data/temp"
 NEW_DATA_IMG = "/app/data/new_data/images"
 NEW_DATA_LBL = "/app/data/new_data/labels"
+QUARANTINE_DIR = "/app/data/quarantine"
 
 
 @app.post("/process-image/")
@@ -59,41 +60,46 @@ async def process_image(user_id: str, file: UploadFile = File(...)):
 @app.post("/feedback")
 async def handle_feedback(data: dict = Body(...)):
     file_id = data.get("file_id")
-    confirmed = data.get("confirmed")
+    status = data.get("status")
 
     # Полные пути ко всем связанным файлам
     src_img = f"/app/data/{file_id}.jpg"  # Оригинал
     src_lbl = f"{TEMP_DIR}/{file_id}.txt"  # Разметка
     res_img = f"{TEMP_DIR}/{file_id}_res.jpg"  # Картинка с рамками для Телеграма
 
-    if confirmed:
-        # Переносим полезные данные для дообучения
-        os.makedirs(NEW_DATA_IMG, exist_ok=True)
-        os.makedirs(NEW_DATA_LBL, exist_ok=True)
+    os.makedirs(NEW_DATA_IMG, exist_ok=True)
+    os.makedirs(NEW_DATA_LBL, exist_ok=True)
+    os.makedirs(QUARANTINE_DIR, exist_ok=True)
 
+    if status == "confirm":
         if os.path.exists(src_img):
             shutil.move(src_img, f"{NEW_DATA_IMG}/{file_id}.jpg")
         if os.path.exists(src_lbl):
             shutil.move(src_lbl, f"{NEW_DATA_LBL}/{file_id}.txt")
-
-        # Картинка с рамками для обучения не нужна
         if os.path.exists(res_img):
             os.remove(res_img)
-
         logging.info(f"FEEDBACK - User confirmed {file_id}. Moved to training set.")
         return {"status": "added_to_training_set"}
 
-    else:
-        # Полная очистка всех следов ложного срабатывания
+    elif status == "reject":
         if os.path.exists(src_img):
-            os.remove(src_img)
+            open(src_lbl, 'w').close()  # Очищаем файл для Background Image
+            shutil.move(src_img, f"{NEW_DATA_IMG}/{file_id}.jpg")
+            shutil.move(src_lbl, f"{NEW_DATA_LBL}/{file_id}.txt")
+        if os.path.exists(res_img):
+            os.remove(res_img)
+        logging.info(f"FEEDBACK - False Positive {file_id}. Added as Background Image.")
+        return {"status": "added_as_negative_sample"}
+
+    else: # inaccurate
+        if os.path.exists(src_img):
+            shutil.move(src_img, f"{QUARANTINE_DIR}/{file_id}.jpg")
         if os.path.exists(src_lbl):
             os.remove(src_lbl)
         if os.path.exists(res_img):
             os.remove(res_img)
-
-        logging.info(f"FEEDBACK - User rejected {file_id}. All temp files cleaned.")
-        return {"status": "ignored_and_cleaned"}
+        logging.warning(f"FEEDBACK - Quarantine: {file_id} has inaccurate bounding box.")
+        return {"status": "moved_to_quarantine"}
 
 
 @app.get("/stats")
@@ -106,10 +112,7 @@ async def get_stats():
             total_requests = sum(1 for line in f if "NEW_REQUEST" in line)
 
     # Считаем подтвержденные дефекты (которые ждут дообучения)
-    pending_images = 0
-    if os.path.exists(NEW_DATA_IMG):
-        pending_images = len(
-            [name for name in os.listdir(NEW_DATA_IMG) if os.path.isfile(os.path.join(NEW_DATA_IMG, name))])
+    pending_images = len(os.listdir(NEW_DATA_IMG)) if os.path.exists(NEW_DATA_IMG) else 0
 
     # Считаем количество завершенных циклов дообучения (папки в архиве)
     retrain_cycles = 0
@@ -117,8 +120,12 @@ async def get_stats():
     if os.path.exists(archive_dir):
         retrain_cycles = len([name for name in os.listdir(archive_dir) if os.path.isdir(os.path.join(archive_dir, name))])
 
+    # Считаем количество дефектов в карантине
+    quarantine_items = len(os.listdir(QUARANTINE_DIR)) if os.path.exists(QUARANTINE_DIR) else 0
+
     return {
         "total_requests": total_requests,
         "pending_images": pending_images,
-        "retrain_cycles": retrain_cycles
+        "retrain_cycles": retrain_cycles,
+        "quarantine_items": quarantine_items
     }
