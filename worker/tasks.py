@@ -68,10 +68,13 @@ def process_pipe_defect(file_path, user_id):
     }
 
     with open(res_img_path, 'rb') as photo:
-        requests.post(url, data={
+        response = requests.post(url, data={
             'chat_id': user_id,
             'caption': "Результат детекции. Пожалуйста, подтвердите качество разметки:",
             'reply_markup': json.dumps(keyboard)
         }, files={'photo': photo})
+
+        # Если Telegram вернет ошибку, это будет видно в логах
+        response.raise_for_status()
 
     return f"Успешно обработано {file_id}"

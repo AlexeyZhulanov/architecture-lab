@@ -26,6 +26,8 @@ services:
     build:
       context: ./worker
     container_name: pipe_worker
+    env_file:
+      - .env
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
