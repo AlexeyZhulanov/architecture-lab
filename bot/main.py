@@ -1,12 +1,15 @@
 import asyncio
 import os
+import aiohttp
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
-import aiohttp
+from middleware import AlbumMiddleware
+from typing import List
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
+dp.message.middleware(AlbumMiddleware())
 
 # URL FastAPI балансировщика (внутри Docker)
 BACKEND_URL = "http://backend:8000"
@@ -40,27 +43,41 @@ async def cmd_stats(message: types.Message):
 
 
 @dp.message(F.photo)
-async def handle_photo(message: types.Message):
-    # Берем фото в лучшем качестве (последнее в списке)
-    photo = message.photo[-1]
-    file_info = await bot.get_file(photo.file_id)
+async def handle_photo_batch(message: types.Message, album: List[types.Message] = None):
+    # Определяем, пришел альбом или одно фото
+    messages = album if album else [message]
+    photos_count = len(messages)
 
-    # Скачиваем файл в память
-    downloaded_file = await bot.download_file(file_info.file_path)
+    status_msg = await message.answer(f"⏳ Загружаю {photos_count} фото на сервер...")
+
+    # Формируем multipart/form-data для пакетной отправки
+    data = aiohttp.FormData()
+
+    for msg in messages:
+        # Берем фото в лучшем качестве (последнее в списке)
+        photo = msg.photo[-1]
+        file_info = await bot.get_file(photo.file_id)
+        downloaded_file = await bot.download_file(file_info.file_path)
+        data.add_field('files', downloaded_file, filename=f"user_{message.from_user.id}_{msg.message_id}.jpg")
+
+    # Делаем POST запрос к FastAPI
+    url = f"{BACKEND_URL}/process-batch/?user_id={message.from_user.id}"
 
     # Пересылаем файл на Backend
     async with aiohttp.ClientSession() as session:
-        data = aiohttp.FormData()
-        data.add_field('file', downloaded_file, filename=f"user_{message.from_user.id}_{message.message_id}.jpg")
-
-        # Делаем POST запрос к FastAPI
-        url_with_user = f"{BACKEND_URL}/process-image/?user_id={message.from_user.id}"
         try:
-            async with session.post(url_with_user, data=data) as response:
+            async with session.post(url, data=data) as response:
                 resp_json = await response.json()
-                await message.answer(resp_json.get("status", "Файл отправлен на сервер."))
+
+                if resp_json.get("status") == "error":
+                    final_text = f"❌ {resp_json.get('message')}"
+                else:
+                    final_text = f"✅ Пакет из {photos_count} фото успешно добавлен в очередь."
+
+                await status_msg.edit_text(final_text)
+
         except Exception:
-            await message.answer("Ошибка связи с вычислительным сервером.")
+            await status_msg.edit_text("❌ Ошибка связи с вычислительным сервером.")
 
 
 @dp.callback_query(F.data.contains("|"))

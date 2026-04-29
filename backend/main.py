@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Body
 from celery import Celery
+from typing import List
 import os
 import shutil
 import redis
@@ -21,7 +22,7 @@ celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://red
 
 # Лимиты нагрузки
 CONCURRENCY = 5
-HARD_LIMIT = 20
+HARD_LIMIT = 100
 
 TEMP_DIR = "/app/data/temp"
 NEW_DATA_IMG = "/app/data/new_data/images"
@@ -29,13 +30,9 @@ NEW_DATA_LBL = "/app/data/new_data/labels"
 QUARANTINE_DIR = "/app/data/quarantine"
 
 
-@app.post("/process-image/")
-async def process_image(user_id: str, file: UploadFile = File(...)):
-    logging.info(f"NEW_REQUEST - User {user_id} sent {file.filename}")
-
-    file_path = f"/app/data/{file.filename}"
-    with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
+@app.post("/process-batch/")
+async def process_batch(user_id: str, files: List[UploadFile] = File(...)):
+    logging.info(f"BATCH_REQUEST - User {user_id} sent {len(files)} images")
 
     # Проверяем текущую нагрузку
     i = celery_app.control.inspect()
@@ -45,33 +42,26 @@ async def process_image(user_id: str, file: UploadFile = File(...)):
     # Сколько задач ждет в очереди Redis
     queue_length = redis_client.llen('celery')
 
-    # Логика распределения нагрузки
-    if queue_length >= HARD_LIMIT:
-        # Сценарий 1: Hard Limit (Load Shedding) - Полный сброс нагрузки
-        logging.critical(f"LOAD_BALANCER - Queue full ({queue_length}/{HARD_LIMIT}). DROP Request from User {user_id}.")
-        os.remove(file_path)  # Удаляем файл, сервер отказывается его обрабатывать
-        return {"status": "❌ Сервер перегружен (превышен жесткий лимит). Отказ в обслуживании."}
+    # ANTI-DDOS / Защита от исчерпания ресурсов (API Abuse)
+    # Нормальный трафик из Telegram (пачки по 10) никогда не пробьет этот лимит
+    if queue_length + len(files) > HARD_LIMIT:
+        logging.critical(f"SECURITY - Anti-DDoS triggered. Queue full ({queue_length} + {len(files)} > {HARD_LIMIT}). DROP Malicious Batch from User {user_id}.")
+        return {"status": "error", "message": "Сервер отклонил подозрительно большой пакет данных (Anti-DDoS)."}
 
-    elif current_active >= CONCURRENCY:
-        # Сценарий 2: Soft Limit - Видеокарта занята, ставим в очередь
-        position = queue_length + 1
-        logging.info(
-            f"QUEUE - Active: {current_active}/{CONCURRENCY}. Task from User {user_id} queued at pos {position}.")
-        status_message = f"⏳ Сервер сейчас занят. Вы поставлены в очередь (ваше место: {position})."
+    available_slots = max(0, CONCURRENCY - current_active)
+    to_processing = min(available_slots, len(files))
+    to_queue = len(files) - to_processing
+    logging.info(f"LOAD_BALANCER - Batch accepted. {to_processing} to GPU immediately, {to_queue} queued (positions {queue_length + 1} to {queue_length + to_queue}).")
 
-        # Отправляем задачу в очередь
-        task = celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
-        return {"status": status_message, "task_id": task.id}
+    # Обработка файлов и распределение
+    for file in files:
+        file_path = f"/app/data/{file.filename}"
+        with open(file_path, "wb") as buffer:
+            buffer.write(await file.read())
 
-    else:
-        # Сценарий 3: Штатная работа - Есть свободный слот в GPU
-        logging.info(
-            f"PROCESSING - Active: {current_active}/{CONCURRENCY}. Task from User {user_id} processing immediately.")
-        status_message = "✅ Свободный слот найден. Задача мгновенно принята в обработку."
+        celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
 
-        # Отправляем задачу
-        task = celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
-        return {"status": status_message, "task_id": task.id}
+    return {"status": "ok"}
 
 
 @app.post("/feedback")
