@@ -7,11 +7,14 @@ from ultralytics import YOLO
 from datetime import datetime
 
 # Настройка логирования
-logging.basicConfig(
-    filename='/app/logs/system_load.log',
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s - %(message)s'
-)
+cl_logger = logging.getLogger("continual_learning")
+cl_logger.setLevel(logging.INFO)
+
+# Защита от дублирования логов
+if not cl_logger.handlers:
+    file_handler = logging.FileHandler('/app/logs/system_load.log', encoding='utf-8')
+    file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s - %(message)s'))
+    cl_logger.addHandler(file_handler)
 
 # Пути внутри Docker-контейнера
 STAGING_DIR = '/app/data/new_data'
@@ -81,7 +84,7 @@ def prepare_split_data(images_list):
     copy_files(train_files, 'train')
     copy_files(val_files, 'val')
 
-    logging.info(f"RETRAINING - Data split: {len(train_files)} train, {len(val_files)} val.")
+    cl_logger.info(f"RETRAINING - Data split: {len(train_files)} train, {len(val_files)} val.")
 
 
 def archive_and_cleanup():
@@ -113,10 +116,11 @@ def run_continual_learning():
     images = [f for f in os.listdir(STAGING_IMG) if f.endswith(('.jpg', '.png'))]
 
     if len(images) < THRESHOLD:
+        cl_logger.info(f"RETRAINING - There is not enough data for continual learning, the current count: {len(images)}/{THRESHOLD}")
         print(f"Недостаточно данных для дообучения. Текущее количество: {len(images)}/{THRESHOLD}")
         return
 
-    logging.info(f"RETRAINING - Started auto-retraining on {len(images)} new images.")
+    cl_logger.info(f"RETRAINING - Started auto-retraining on {len(images)} new images.")
     print(f"Начинаем дообучение на {len(images)} новых файлах...")
 
     # Готовим данные (сплит train/val)
@@ -127,7 +131,7 @@ def run_continual_learning():
 
     # Загружаем текущую модель
     if not os.path.exists(WEIGHTS_PATH):
-        logging.error("RETRAINING - Base model not found!")
+        cl_logger.error("RETRAINING - Base model not found!")
         return
 
     model = YOLO(WEIGHTS_PATH)
@@ -140,16 +144,18 @@ def run_continual_learning():
         batch=2,  # Маленький батч для маленького датасета
         device=0,
         workers=0,
-        project='runs/detect',
+        project='/app/runs',
         name='retrain_run',
         exist_ok=True  # Перезапись папки при следующих дообучениях
     )
 
     # Обновляем веса в рабочей папке
-    new_weights = 'runs/detect/retrain_run/weights/best.pt'
+    new_weights = '/app/runs/retrain_run/weights/best.pt'
     if os.path.exists(new_weights):
         shutil.copy(new_weights, WEIGHTS_PATH)
-        logging.info("RETRAINING - Successfully updated production weights.")
+        cl_logger.info("RETRAINING - Successfully updated production weights.")
+    else:
+        cl_logger.error(f"RETRAINING FAILED - Weights not found at {new_weights}")
 
     # Убираем данные в архив
     archive_and_cleanup()
