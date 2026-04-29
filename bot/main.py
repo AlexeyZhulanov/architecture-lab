@@ -48,7 +48,7 @@ async def handle_photo_batch(message: types.Message, album: List[types.Message] 
     messages = album if album else [message]
     photos_count = len(messages)
 
-    status_msg = await message.answer(f"⏳ Загружаю {photos_count} фото на сервер...")
+    status_msg = await message.answer(f"⏳ Загружаю {photos_count} фото. Я пришлю результаты ТОЛЬКО для тех кадров, где будут обнаружены дефекты.")
 
     # Формируем multipart/form-data для пакетной отправки
     data = aiohttp.FormData()
@@ -72,7 +72,7 @@ async def handle_photo_batch(message: types.Message, album: List[types.Message] 
                 if resp_json.get("status") == "error":
                     final_text = f"❌ {resp_json.get('message')}"
                 else:
-                    final_text = f"✅ Пакет из {photos_count} фото успешно добавлен в очередь."
+                    final_text = f"✅ Пакет из {photos_count} фото в обработке. Ожидайте уведомлений о дефектах."
 
                 await status_msg.edit_text(final_text)
 

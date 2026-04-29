@@ -1,10 +1,19 @@
 import os
 import requests
 import json
+import logging
 from celery import Celery
 from celery.schedules import crontab
 from ultralytics import YOLO
 from continual_learning import run_continual_learning
+
+# Настройка логгера для воркера (чтобы логи были видны в общем файле)
+worker_logger = logging.getLogger("worker")
+worker_logger.setLevel(logging.INFO)
+if not worker_logger.handlers:
+    fh = logging.FileHandler('/app/logs/system_load.log', encoding='utf-8')
+    fh.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s - %(message)s'))
+    worker_logger.addHandler(fh)
 
 # Подключаемся к очереди
 app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
@@ -43,6 +52,13 @@ def process_pipe_defect(file_path, user_id):
 
     # Генерируем уникальный ID для этой пары фото+разметка
     file_id = os.path.basename(file_path).split('.')[0]
+
+    # Если дефектов нет
+    if len(result.boxes) == 0:
+        worker_logger.info(f"CLEAN - No defects found in {file_id}. Image deleted.")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return f"Skipped clean image: {file_id}"
 
     # Если объекты найдены, сохраняем их координаты
     label_path = f"/app/data/temp/{file_id}.txt"
