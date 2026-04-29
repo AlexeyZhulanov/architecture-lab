@@ -20,6 +20,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Запускаем Celery worker.
-# --concurrency=1 означает, что 1 воркер берет строго 1 картинку за раз.
+# --concurrency=N означает, что 1 воркер берет строго N картинок за раз.
 # Это защита видеокарты от переполнения памяти (OOM - Out of Memory).
-CMD ["celery", "-A", "tasks", "worker", "--beat", "--loglevel=info", "--concurrency=1"]
+CMD ["celery", "-A", "tasks", "worker", "--beat", "--loglevel=info", "--concurrency=5"]

@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Body
 from celery import Celery
 import os
 import shutil
+import redis
 import logging
 
 # Настройка логирования
@@ -13,11 +14,14 @@ logging.basicConfig(
 
 app = FastAPI(title="Pipe Defect API")
 
+redis_client = redis.Redis(host='redis', port=6379, db=0)
+
 # Подключаемся к очереди Redis
 celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
-# Лимит нагрузки: видеокарта тянет максимум 5 задач одновременно (видеопамять)
-MAX_ACTIVE_TASKS = 5
+# Лимиты нагрузки
+CONCURRENCY = 5
+HARD_LIMIT = 20
 
 TEMP_DIR = "/app/data/temp"
 NEW_DATA_IMG = "/app/data/new_data/images"
@@ -36,25 +40,38 @@ async def process_image(user_id: str, file: UploadFile = File(...)):
     # Проверяем текущую нагрузку
     i = celery_app.control.inspect()
     active_tasks = i.active()
+    current_active = sum(len(tasks) for worker, tasks in active_tasks.items()) if active_tasks else 0
 
-    current_load = 0
-    if active_tasks:
-        for worker, tasks in active_tasks.items():
-            current_load += len(tasks)
+    # Сколько задач ждет в очереди Redis
+    queue_length = redis_client.llen('celery')
 
     # Логика распределения нагрузки
-    if current_load >= MAX_ACTIVE_TASKS:
-        logging.warning(f"LOAD_BALANCER - Active tasks: {current_load}/{MAX_ACTIVE_TASKS}. Peak load reached!")
-        logging.info(f"QUEUE - Request from User {user_id} placed in queue.")
-        status_message = "Сервер перегружен. Ваша задача поставлена в очередь."
+    if queue_length >= HARD_LIMIT:
+        # Сценарий 1: Hard Limit (Load Shedding) - Полный сброс нагрузки
+        logging.critical(f"LOAD_BALANCER - Queue full ({queue_length}/{HARD_LIMIT}). DROP Request from User {user_id}.")
+        os.remove(file_path)  # Удаляем файл, сервер отказывается его обрабатывать
+        return {"status": "❌ Сервер перегружен (превышен жесткий лимит). Отказ в обслуживании."}
+
+    elif current_active >= CONCURRENCY:
+        # Сценарий 2: Soft Limit - Видеокарта занята, ставим в очередь
+        position = queue_length + 1
+        logging.info(
+            f"QUEUE - Active: {current_active}/{CONCURRENCY}. Task from User {user_id} queued at pos {position}.")
+        status_message = f"⏳ Сервер сейчас занят. Вы поставлены в очередь (ваше место: {position})."
+
+        # Отправляем задачу в очередь
+        task = celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
+        return {"status": status_message, "task_id": task.id}
+
     else:
-        logging.info(f"LOAD_BALANCER - Active tasks: {current_load}/{MAX_ACTIVE_TASKS}. Processing...")
-        status_message = "Задача принята в обработку."
+        # Сценарий 3: Штатная работа - Есть свободный слот в GPU
+        logging.info(
+            f"PROCESSING - Active: {current_active}/{CONCURRENCY}. Task from User {user_id} processing immediately.")
+        status_message = "✅ Свободный слот найден. Задача мгновенно принята в обработку."
 
-    # Отправляем задачу в очередь (Celery)
-    task = celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
-
-    return {"status": status_message, "task_id": task.id}
+        # Отправляем задачу
+        task = celery_app.send_task('process_pipe_defect', args=[file_path, user_id])
+        return {"status": status_message, "task_id": task.id}
 
 
 @app.post("/feedback")

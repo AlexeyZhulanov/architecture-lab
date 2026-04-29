@@ -9,6 +9,10 @@ from continual_learning import run_continual_learning
 # Подключаемся к очереди
 app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
+# Отключаем скрытую буферизацию задач
+app.conf.worker_prefetch_multiplier = 1
+app.conf.task_acks_late = True
+
 # Настройка планировщика
 app.conf.beat_schedule = {
     'check-for-retraining-every-10-minutes': {
