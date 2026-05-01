@@ -22,7 +22,9 @@ celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://red
 
 # Лимиты нагрузки
 CONCURRENCY = 5
-HARD_LIMIT = 100
+PHOTO_HARD_LIMIT = 100
+MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50 МБ
+VIDEO_HARD_LIMIT = 20
 
 TEMP_DIR = "/app/data/temp"
 NEW_DATA_IMG = "/app/data/new_data/images"
@@ -44,8 +46,8 @@ async def process_batch(user_id: str, files: List[UploadFile] = File(...)):
 
     # ANTI-DDOS / Защита от исчерпания ресурсов (API Abuse)
     # Нормальный трафик из Telegram (пачки по 10) никогда не пробьет этот лимит
-    if queue_length + len(files) > HARD_LIMIT:
-        logging.critical(f"SECURITY - Anti-DDoS triggered. Queue full ({queue_length} + {len(files)} > {HARD_LIMIT}). DROP Malicious Batch from User {user_id}.")
+    if queue_length + len(files) > PHOTO_HARD_LIMIT:
+        logging.critical(f"SECURITY - Anti-DDoS triggered. Queue full ({queue_length} + {len(files)} > {PHOTO_HARD_LIMIT}). DROP Malicious Batch from User {user_id}.")
         return {"status": "error", "message": "Сервер отклонил подозрительно большой пакет данных (Anti-DDoS)."}
 
     available_slots = max(0, CONCURRENCY - current_active)
@@ -64,13 +66,51 @@ async def process_batch(user_id: str, files: List[UploadFile] = File(...)):
     return {"status": "ok"}
 
 
+@app.post("/process-video/")
+async def process_video(user_id: str, file: UploadFile = File(...)):
+    logging.info(f"VIDEO_REQUEST - User {user_id} sent video {file.filename}")
+
+    # В FastAPI file.size возвращает размер в байтах
+    if file.size and file.size > MAX_VIDEO_SIZE:
+        logging.warning(f"SECURITY - Video {file.filename} from User {user_id} rejected. Size > 50MB.")
+        return {"status": "error", "message": "❌ Файл слишком большой. Максимальный размер видео: 50 МБ."}
+
+    # TODO сделать отдельную очередь под видео, сейчас она общая с фото
+    queue_length = redis_client.llen('celery')
+
+    if queue_length >= VIDEO_HARD_LIMIT:
+        logging.critical(f"LOAD_BALANCER - Queue too long for video ({queue_length} >= {VIDEO_HARD_LIMIT}). DROP Request.")
+        return {"status": "error", "message": "❌ Сервер перегружен тяжелыми задачами. Попробуйте отправить видео позже."}
+
+    # Сохраняем видео на диск
+    file_path = f"/app/data/{file.filename}"
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    logging.info(f"LOAD_BALANCER - Video {file.filename} queued successfully.")
+
+    # Отправляем в специальную задачу Celery для видео
+    celery_app.send_task('process_pipe_video', args=[file_path, user_id])
+
+    return {"status": "ok"}
+
+
 @app.post("/feedback")
 async def handle_feedback(data: dict = Body(...)):
     file_id = data.get("file_id")
     status = data.get("status")
 
     # Полные пути ко всем связанным файлам
-    src_img = f"/app/data/{file_id}.jpg"  # Оригинал
+    src_img_video = f"/app/data/temp/{file_id}.jpg"
+    src_img_photo = f"/app/data/{file_id}.jpg"
+
+    if os.path.exists(src_img_video):
+        src_img = src_img_video
+    elif os.path.exists(src_img_photo):
+        src_img = src_img_photo
+    else:
+        return {"status": "Файл уже перенесен или удален."}
+
     src_lbl = f"{TEMP_DIR}/{file_id}.txt"  # Разметка
     res_img = f"{TEMP_DIR}/{file_id}_res.jpg"  # Картинка с рамками для Телеграма
 

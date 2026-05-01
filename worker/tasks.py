@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import logging
+import cv2
 from celery import Celery
 from celery.schedules import crontab
 from ultralytics import YOLO
@@ -98,3 +99,101 @@ def process_pipe_defect(file_path, user_id):
         response.raise_for_status()
 
     return f"Успешно обработано {file_id}"
+
+
+@app.task(name='process_pipe_video')
+def process_pipe_video(file_path, user_id):
+    if model is None:
+        return "Ошибка: Модель не найдена на сервере."
+
+    video_id = os.path.basename(file_path).split('.')[0]
+    worker_logger.info(f"VIDEO_PROCESSING - Started analyzing {video_id}.mp4")
+
+    # Открываем видео через OpenCV
+    cap = cv2.VideoCapture(file_path)
+    if not cap.isOpened():
+        worker_logger.error(f"Failed to open video {file_path}")
+        return "Ошибка: Не удалось открыть видео."
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    # Берем 2 кадра в секунду (interval = fps)
+    interval = int(fps / 2) if fps > 0 else 15
+
+    frame_count = 0
+    defects_found = 0
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break  # Видео закончилось
+
+        # Прореживание: обрабатываем только 2 кадра в секунду
+        if frame_count % interval == 0:
+            # Считаем таймкод (минуты:секунды)
+            current_time_total_seconds = frame_count / fps
+            mins, secs = divmod(int(current_time_total_seconds), 60)
+            time_str = f"{mins:02d}:{secs:02d}"
+
+            results = model(frame)
+            result = results[0]
+
+            # Если нашли дефект
+            if len(result.boxes) > 0:
+                defects_found += 1
+
+                # Создаем уникальный ID для кадра, чтобы работало дообучение
+                frame_id = f"{video_id}_f{frame_count}"
+
+                # Сохраняем исходный кадр для дообучения
+                raw_img_path = f"/app/data/temp/{frame_id}.jpg"
+                os.makedirs("/app/data/temp", exist_ok=True)
+                cv2.imwrite(raw_img_path, frame)
+
+                # Сохраняем разметку
+                label_path = f"/app/data/temp/{frame_id}.txt"
+                with open(label_path, 'w') as f:
+                    for box in result.boxes:
+                        coords = box.xywhn[0].tolist()
+                        class_id = int(box.cls[0])
+                        f.write(f"{class_id} {' '.join(map(str, coords))}\n")
+
+                # Сохраняем картинку с рамками
+                res_img_path = f"/app/data/temp/{frame_id}_res.jpg"
+                result.save(filename=res_img_path)
+
+                # Отправляем кадр пользователю
+                url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+                keyboard = {
+                    "inline_keyboard": [
+                        [{"text": "✅ Верно", "callback_data": f"confirm|{frame_id}"}],
+                        [{"text": "⚠️ Неточная рамка", "callback_data": f"inaccurate|{frame_id}"}],
+                        [{"text": "❌ Ложное срабатывание", "callback_data": f"reject|{frame_id}"}]
+                    ]
+                }
+
+                with open(res_img_path, 'rb') as photo:
+                    requests.post(url, data={
+                        'chat_id': user_id,
+                        'caption': f"🎥 <b>Видео:</b> дефект на <b>{time_str}</b>",
+                        'parse_mode': 'HTML',
+                        'reply_markup': json.dumps(keyboard)
+                    }, files={'photo': photo})
+
+        frame_count += 1
+
+    cap.release()
+
+    # Удаляем тяжелый видеофайл с сервера
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Сообщаем пользователю, что видео полностью просмотрено
+    report_text = f"✅ Анализ видео завершен.\nНайдено кадров с дефектами: {defects_found}."
+    requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", data={
+        'chat_id': user_id,
+        'text': report_text
+    })
+
+    worker_logger.info(f"VIDEO_PROCESSING - Finished {video_id}.mp4. Defects found: {defects_found}")
+    return f"Processed video {video_id}"

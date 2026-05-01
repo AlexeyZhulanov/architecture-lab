@@ -80,6 +80,40 @@ async def handle_photo_batch(message: types.Message, album: List[types.Message] 
             await status_msg.edit_text("❌ Ошибка связи с вычислительным сервером.")
 
 
+@dp.message(F.video)
+async def handle_video(message: types.Message):
+    status_msg = await message.answer("⏳ Скачиваю видео... Это может занять некоторое время.")
+
+    # Получаем информацию о файле
+    video = message.video
+
+    # Базовая защита на стороне Telegram (20MB - стандартный лимит бота, если не поднят локальный сервер API)
+    if video.file_size > 20 * 1024 * 1024:
+        return await status_msg.edit_text("❌ Видео слишком большое! Telegram боты принимают файлы до 20 МБ.")
+
+    file_info = await bot.get_file(video.file_id)
+    downloaded_file = await bot.download_file(file_info.file_path)
+
+    # Формируем данные для отправки на Бэкенд
+    data = aiohttp.FormData()
+    data.add_field('file', downloaded_file, filename=f"video_{message.from_user.id}_{message.message_id}.mp4")
+
+    url = f"{BACKEND_URL}/process-video/?user_id={message.from_user.id}"
+
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, data=data) as response:
+                resp_json = await response.json()
+
+                if resp_json.get("status") == "error":
+                    await status_msg.edit_text(resp_json.get('message'))
+                else:
+                    await status_msg.edit_text("✅ Видео успешно загружено в очередь! Я пришлю скриншоты тех моментов, где обнаружу дефекты.")
+
+        except Exception:
+            await status_msg.edit_text("❌ Ошибка связи с вычислительным сервером.")
+
+
 @dp.callback_query(F.data.contains("|"))
 async def process_feedback(callback: types.CallbackQuery):
     status, file_id = callback.data.split("|")
@@ -115,7 +149,7 @@ async def handle_text(message: types.Message):
     )
 
 # Если прислали стикер, кружочек, аудио, локацию и т.д.
-@dp.message(~F.photo & ~F.text & ~F.document)
+@dp.message(~F.photo & ~F.video & ~F.text & ~F.document)
 async def handle_other(message: types.Message):
     await message.answer("Извините, я понимаю только фотографии. 📸")
 
