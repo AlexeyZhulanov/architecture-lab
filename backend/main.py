@@ -24,7 +24,7 @@ celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://red
 CONCURRENCY = 5
 PHOTO_HARD_LIMIT = 100
 MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50 МБ
-VIDEO_HARD_LIMIT = 20
+VIDEO_HARD_LIMIT = 10
 
 TEMP_DIR = "/app/data/temp"
 NEW_DATA_IMG = "/app/data/new_data/images"
@@ -75,22 +75,22 @@ async def process_video(user_id: str, file: UploadFile = File(...)):
         logging.warning(f"SECURITY - Video {file.filename} from User {user_id} rejected. Size > 50MB.")
         return {"status": "error", "message": "❌ Файл слишком большой. Максимальный размер видео: 50 МБ."}
 
-    # TODO сделать отдельную очередь под видео, сейчас она общая с фото
-    queue_length = redis_client.llen('celery')
+    # Отдельная очередь только для видео
+    video_queue_len = redis_client.llen('video_queue')
 
-    if queue_length >= VIDEO_HARD_LIMIT:
-        logging.critical(f"LOAD_BALANCER - Queue too long for video ({queue_length} >= {VIDEO_HARD_LIMIT}). DROP Request.")
-        return {"status": "error", "message": "❌ Сервер перегружен тяжелыми задачами. Попробуйте отправить видео позже."}
+    if video_queue_len >= VIDEO_HARD_LIMIT:
+        logging.critical(f"LOAD_BALANCER - Video queue full ({video_queue_len}/{VIDEO_HARD_LIMIT}).")
+        return {"status": "error", "message": "❌ Очередь видео переполнена. Попробуйте позже."}
 
     # Сохраняем видео на диск
     file_path = f"/app/data/{file.filename}"
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    logging.info(f"LOAD_BALANCER - Video {file.filename} queued successfully.")
+    logging.info(f"LOAD_BALANCER - Video {file.filename} accepted. Queue pos: {video_queue_len + 1}")
 
-    # Отправляем в специальную задачу Celery для видео
-    celery_app.send_task('process_pipe_video', args=[file_path, user_id])
+    # Отправляем в выделенную очередь
+    celery_app.send_task('process_pipe_video', args=[file_path, user_id], queue='video_queue')
 
     return {"status": "ok"}
 
