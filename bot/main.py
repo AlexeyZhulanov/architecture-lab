@@ -81,37 +81,57 @@ async def handle_photo_batch(message: types.Message, album: List[types.Message] 
 
 
 @dp.message(F.video)
-async def handle_video(message: types.Message):
-    status_msg = await message.answer("⏳ Скачиваю видео... Это может занять некоторое время.")
+async def handle_video(message: types.Message, album: List[types.Message] = None):
+    # Если пришел альбом, берем его. Если одно видео - делаем из него список.
+    messages = album if album else [message]
+    video_count = len(messages)
+    status_msg = await message.answer(f"⏳ Скачиваю {video_count} видео... Это может занять некоторое время.")
 
-    # Получаем информацию о файле
-    video = message.video
+    success_count = 0
+    error_messages = []
 
-    # Базовая защита на стороне Telegram (20MB - стандартный лимит бота, если не поднят локальный сервер API)
-    if video.file_size > 20 * 1024 * 1024:
-        return await status_msg.edit_text("❌ Видео слишком большое! Telegram боты принимают файлы до 20 МБ.")
+    for msg in messages:
+        # Получаем информацию о файле
+        video = msg.video
 
-    file_info = await bot.get_file(video.file_id)
-    downloaded_file = await bot.download_file(file_info.file_path)
+        # Базовая защита на стороне Telegram (20MB - стандартный лимит бота, если не поднят локальный сервер API)
+        if video.file_size > 20 * 1024 * 1024:
+            error_messages.append("❌ Одно или несколько видео превышают лимит Telegram (20 МБ).")
+            continue
 
-    # Формируем данные для отправки на Бэкенд
-    data = aiohttp.FormData()
-    data.add_field('file', downloaded_file, filename=f"video_{message.from_user.id}_{message.message_id}.mp4")
+        file_info = await bot.get_file(video.file_id)
+        downloaded_file = await bot.download_file(file_info.file_path)
 
-    url = f"{BACKEND_URL}/process-video/?user_id={message.from_user.id}"
+        # Формируем данные для отправки на Бэкенд
+        data = aiohttp.FormData()
+        data.add_field('file', downloaded_file, filename=f"video_{message.from_user.id}_{msg.message_id}.mp4")
 
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(url, data=data) as response:
-                resp_json = await response.json()
+        url = f"{BACKEND_URL}/process-video/?user_id={message.from_user.id}"
 
-                if resp_json.get("status") == "error":
-                    await status_msg.edit_text(resp_json.get('message'))
-                else:
-                    await status_msg.edit_text("✅ Видео успешно загружено в очередь! Я пришлю скриншоты тех моментов, где обнаружу дефекты.")
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(url, data=data) as response:
+                    resp_json = await response.json()
 
-        except Exception:
-            await status_msg.edit_text("❌ Ошибка связи с вычислительным сервером.")
+                    if resp_json.get("status") == "error":
+                        error_messages.append(f"❌ {resp_json.get('message')}")
+                    else:
+                        success_count += 1
+
+            except Exception:
+                error_messages.append("❌ Ошибка связи с сервером.")
+
+    # Формируем итоговый отчет для пользователя
+    if success_count > 0:
+        final_text = f"✅ Успешно загружено в очередь: {success_count} из {video_count} видео.\nЯ пришлю кадры с дефектами."
+    else:
+        final_text = f"❌ Ни одно видео не было загружено."
+
+    # Добавляем уникальные сообщения об ошибках (чтобы не дублировать текст, если 5 видео отбило лимитом)
+    if error_messages:
+        final_text += "\n\n" + "\n".join(list(set(error_messages)))
+
+    await status_msg.edit_text(final_text)
 
 
 @dp.callback_query(F.data.contains("|"))
