@@ -1,0 +1,101 @@
+Лог стресс-тестирования, примерное время появления сообщений: [2026-05-03 15:50:30]
+pipe_bot      | Cause exception while process update id=125755045 by bot id=8063910591
+pipe_bot      | TelegramRetryAfter: Telegram server says - Flood control exceeded on method 'EditMessageText' in chat 8437329115. Retry in 242 seconds.
+pipe_bot      | Original description: Too Many Requests: retry after 242
+pipe_bot      | (background on this error at: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this)
+pipe_bot      | Traceback (most recent call last):
+pipe_bot      |   File "/app/main.py", line 77, in handle_photo_batch
+pipe_bot      |     await status_msg.edit_text(final_text)
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/methods/base.py", line 82, in emit
+pipe_bot      |     return await bot(self)
+pipe_bot      |            ^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/bot.py", line 493, in __call__
+pipe_bot      |     return await self.session(self, method, timeout=request_timeout)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/base.py", line 259, in __call__
+pipe_bot      |     return cast(TelegramType, await middleware(bot, method))
+pipe_bot      |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/aiohttp.py", line 177, in make_request
+pipe_bot      |     response = self.check_response(
+pipe_bot      |                ^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/base.py", line 109, in check_response
+pipe_bot      |     raise TelegramRetryAfter(
+pipe_bot      | aiogram.exceptions.TelegramRetryAfter: Telegram server says - Flood control exceeded on method 'EditMessageText' in chat 8437329115. Retry in 242 seconds.
+pipe_bot      | Original description: Too Many Requests: retry after 242
+pipe_bot      | (background on this error at: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this)
+pipe_bot      |
+pipe_bot      | During handling of the above exception, another exception occurred:
+pipe_bot      |
+pipe_bot      | Traceback (most recent call last):
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+pipe_bot      |     response = await self.feed_update(bot, update, **kwargs)
+pipe_bot      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+pipe_bot      |     response = await self.update.wrap_outer_middleware(
+pipe_bot      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+pipe_bot      |     return await handler(event, data)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+pipe_bot      |     return await handler(event, data)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+pipe_bot      |     return await handler(event, data)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+pipe_bot      |     return await wrapped_inner(event, kwargs)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+pipe_bot      |     return await wrapped()
+pipe_bot      |            ^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+pipe_bot      |     return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+pipe_bot      |     return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+pipe_bot      |     return await self._propagate_event(
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+pipe_bot      |     response = await observer.trigger(event, **kwargs)
+pipe_bot      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+pipe_bot      |     return await wrapped_inner(event, kwargs)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/app/middleware.py", line 23, in __call__
+pipe_bot      |     return await handler(event, data)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+pipe_bot      |     return await wrapped()
+pipe_bot      |            ^^^^^^^^^^^^^^^
+pipe_bot      |   File "/app/main.py", line 80, in handle_photo_batch
+pipe_bot      |     await status_msg.edit_text("❌ Ошибка связи с вычислительным сервером.")
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/methods/base.py", line 82, in emit
+pipe_bot      |     return await bot(self)
+pipe_bot      |            ^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/bot.py", line 493, in __call__
+pipe_bot      |     return await self.session(self, method, timeout=request_timeout)
+pipe_bot      |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/base.py", line 259, in __call__
+pipe_bot      |     return cast(TelegramType, await middleware(bot, method))
+pipe_bot      |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipe_worker   | [2026-05-03 15:53:42,227: ERROR/ForkPoolWorker-4] Task process_pipe_defect[b4946660-bf72-4aa3-8f5e-42f3f11ac6c4] raised unexpected: HTTPError('429 Client Error: Too Many Requests for url: https://api.telegram.org/bot8063910591:AAEvUugjnCvtVlBYq4RGWvpbOSWCvignxr4/sendPhoto')
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/aiohttp.py", line 177, in make_request
+pipe_worker   | Traceback (most recent call last):
+
+
+pipe_bot      |                ^^^^^^^^^^^^^^^^^^^^
+pipe_worker   |     R = retval = fun(*args, **kwargs)
+pipe_bot      |   File "/usr/local/lib/python3.11/site-packages/aiogram/client/session/base.py", line 109, in check_response
+
+
+pipe_worker   |   File "/usr/local/lib/python3.10/site-packages/celery/app/trace.py", line 858, in __protected_call__
+pipe_bot      |     raise TelegramRetryAfter(
+pipe_bot      | aiogram.exceptions.TelegramRetryAfter: Telegram server says - Flood control exceeded on method 'EditMessageText' in chat 8437329115. Retry in 242 seconds.
+
+pipe_worker   |   File "/app/tasks.py", line 99, in process_pipe_defect
+pipe_worker   |     response.raise_for_status()Requests: retry after 242
+pipe_worker   |   File "/usr/local/lib/python3.10/site-packages/requests/models.py", line 1028, in raise_for_statusavoid-this)
+pipe_worker   |     raise HTTPError(http_error_msg, response=self)
+pipe_worker   | requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url: https://api.telegram.org/bot8063910591:AAEvUugjnCvtVlBYq4RGWvpbOSWCvignxr4/sendPhoto

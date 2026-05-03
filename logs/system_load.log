@@ -1,0 +1,308 @@
+[2026-05-03 10:45:19,238] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1033.mp4
+[2026-05-03 10:45:56,338] INFO - VIDEO_PROCESSING - Finished video_1174869156_1033.mp4. Defects found: 38
+[2026-05-03 10:46:44,855] INFO - FEEDBACK - False Positive video_1174869156_1033_f2208. Added as Background Image.
+[2026-05-03 10:50:00,059] INFO - RETRAINING - There is not enough data for continual learning, the current count: 1/5
+[2026-05-03 12:28:30,868] INFO - RETRAINING - There is not enough data for continual learning, the current count: 1/5
+[2026-05-03 12:32:07,967] INFO - FEEDBACK - False Positive video_1174869156_1033_f2988. Added as Background Image.
+[2026-05-03 12:55:59,473] INFO - BATCH_REQUEST - User 1174869156 sent 1 images
+[2026-05-03 12:56:01,157] INFO - LOAD_BALANCER - Batch accepted. 1 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 12:56:14,441] INFO - FEEDBACK - User confirmed user_1174869156_1074. Moved to training set.
+[2026-05-03 12:56:42,194] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1077.mp4
+[2026-05-03 12:56:42,250] INFO - LOAD_BALANCER - Video video_1174869156_1077.mp4 accepted. Queue pos: 1
+[2026-05-03 12:56:42,254] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1077.mp4
+[2026-05-03 12:56:47,298] INFO - BATCH_REQUEST - User 1174869156 sent 3 images
+[2026-05-03 12:56:48,306] INFO - LOAD_BALANCER - Batch accepted. 3 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 12:56:55,698] INFO - VIDEO_PROCESSING - Finished video_1174869156_1077.mp4. Defects found: 9
+[2026-05-03 12:57:16,933] INFO - FEEDBACK - User confirmed video_1174869156_1077_f108. Moved to training set.
+[2026-05-03 12:57:26,957] WARNING - FEEDBACK - Quarantine: video_1174869156_1077_f120 has inaccurate bounding box.
+[2026-05-03 12:57:36,957] INFO - FEEDBACK - False Positive video_1174869156_1077_f360. Added as Background Image.
+[2026-05-03 12:58:02,658] INFO - FEEDBACK - False Positive video_1174869156_1077_f1152. Added as Background Image.
+[2026-05-03 12:58:32,179] WARNING - FEEDBACK - Quarantine: video_1174869156_1077_f1296 has inaccurate bounding box.
+[2026-05-03 12:59:03,604] INFO - FEEDBACK - User confirmed video_1174869156_1077_f1308. Moved to training set.
+[2026-05-03 12:59:33,263] INFO - FEEDBACK - User confirmed user_1174869156_1082. Moved to training set.
+[2026-05-03 13:00:00,035] INFO - RETRAINING - Started auto-retraining on 6 new images.
+[2026-05-03 13:00:00,268] INFO - RETRAINING - Data split: 5 train, 1 val.
+[2026-05-03 13:00:33,410] INFO - RETRAINING - Successfully updated production weights.
+[2026-05-03 13:10:00,009] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 13:20:00,032] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 13:30:00,118] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 13:41:04,184] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1096.mp4
+[2026-05-03 13:41:04,234] INFO - LOAD_BALANCER - Video video_1174869156_1096.mp4 accepted. Queue pos: 1
+[2026-05-03 13:41:04,512] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1096.mp4
+[2026-05-03 13:41:09,402] INFO - BATCH_REQUEST - User 1174869156 sent 3 images
+[2026-05-03 13:41:10,454] INFO - LOAD_BALANCER - Batch accepted. 3 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 13:41:37,913] INFO - VIDEO_PROCESSING - Finished video_1174869156_1096.mp4. Defects found: 48
+[2026-05-03 13:50:00,121] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 13:50:31,849] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1160.mp4
+[2026-05-03 13:50:31,904] INFO - LOAD_BALANCER - Video video_1174869156_1160.mp4 accepted. Queue pos: 1
+[2026-05-03 13:50:31,940] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1160.mp4
+[2026-05-03 13:51:11,937] INFO - VIDEO_PROCESSING - Finished video_1174869156_1160.mp4. Defects found: 55
+[2026-05-03 15:33:14,352] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1221.mp4
+[2026-05-03 15:33:14,550] INFO - LOAD_BALANCER - Video video_1174869156_1221.mp4 accepted. Queue pos: 1
+[2026-05-03 15:33:14,913] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1221.mp4
+[2026-05-03 15:33:16,859] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1222.mp4
+[2026-05-03 15:33:16,923] INFO - LOAD_BALANCER - Video video_1174869156_1222.mp4 accepted. Queue pos: 1
+[2026-05-03 15:33:16,928] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1222.mp4
+[2026-05-03 15:33:50,127] INFO - VIDEO_PROCESSING - Finished video_1174869156_1221.mp4. Defects found: 34
+[2026-05-03 15:34:17,795] INFO - VIDEO_PROCESSING - Finished video_1174869156_1222.mp4. Defects found: 78
+[2026-05-03 15:36:24,032] INFO - FEEDBACK - User confirmed video_1174869156_1222_f1812. Moved to training set.
+[2026-05-03 15:36:30,687] INFO - FEEDBACK - User confirmed video_1174869156_1222_f1776. Moved to training set.
+[2026-05-03 15:36:47,120] INFO - FEEDBACK - False Positive video_1174869156_1222_f1260. Added as Background Image.
+[2026-05-03 15:36:53,021] INFO - FEEDBACK - False Positive video_1174869156_1222_f1128. Added as Background Image.
+[2026-05-03 15:37:33,542] INFO - FEEDBACK - False Positive video_1174869156_1222_f372. Added as Background Image.
+[2026-05-03 15:37:43,048] WARNING - FEEDBACK - Quarantine: video_1174869156_1222_f264 has inaccurate bounding box.
+[2026-05-03 15:38:13,877] INFO - FEEDBACK - User confirmed video_1174869156_1222_f2976. Moved to training set.
+[2026-05-03 15:38:16,304] INFO - FEEDBACK - User confirmed video_1174869156_1222_f2964. Moved to training set.
+[2026-05-03 15:38:51,824] INFO - FEEDBACK - User confirmed video_1174869156_1222_f888. Moved to training set.
+[2026-05-03 15:38:55,365] INFO - FEEDBACK - User confirmed video_1174869156_1222_f876. Moved to training set.
+[2026-05-03 15:38:57,917] INFO - FEEDBACK - User confirmed video_1174869156_1222_f864. Moved to training set.
+[2026-05-03 15:39:00,344] INFO - FEEDBACK - User confirmed video_1174869156_1222_f852. Moved to training set.
+[2026-05-03 15:39:03,481] INFO - FEEDBACK - User confirmed video_1174869156_1222_f840. Moved to training set.
+[2026-05-03 15:40:00,132] INFO - RETRAINING - Started auto-retraining on 12 new images.
+[2026-05-03 15:40:00,549] INFO - RETRAINING - Data split: 10 train, 2 val.
+[2026-05-03 15:40:42,019] INFO - RETRAINING - Successfully updated production weights.
+[2026-05-03 15:42:42,821] INFO - BATCH_REQUEST - User 8437329115 sent 1 images
+[2026-05-03 15:42:43,870] INFO - LOAD_BALANCER - Batch accepted. 1 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 15:44:43,669] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1341.mp4
+[2026-05-03 15:44:43,698] INFO - LOAD_BALANCER - Video video_1174869156_1341.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:43,702] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1341.mp4
+[2026-05-03 15:44:45,361] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1342.mp4
+[2026-05-03 15:44:45,440] INFO - LOAD_BALANCER - Video video_1174869156_1342.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:45,448] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1342.mp4
+[2026-05-03 15:44:47,128] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1343.mp4
+[2026-05-03 15:44:47,183] INFO - LOAD_BALANCER - Video video_1174869156_1343.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:47,197] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1343.mp4
+[2026-05-03 15:44:49,154] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1344.mp4
+[2026-05-03 15:44:49,236] INFO - LOAD_BALANCER - Video video_1174869156_1344.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:49,244] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1344.mp4
+[2026-05-03 15:44:50,959] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1345.mp4
+[2026-05-03 15:44:51,002] INFO - LOAD_BALANCER - Video video_1174869156_1345.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:51,008] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1345.mp4
+[2026-05-03 15:44:53,513] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1346.mp4
+[2026-05-03 15:44:54,187] INFO - LOAD_BALANCER - Video video_1174869156_1346.mp4 accepted. Queue pos: 1
+[2026-05-03 15:44:56,871] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1347.mp4
+[2026-05-03 15:44:56,955] INFO - LOAD_BALANCER - Video video_1174869156_1347.mp4 accepted. Queue pos: 2
+[2026-05-03 15:44:59,512] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1348.mp4
+[2026-05-03 15:44:59,638] INFO - LOAD_BALANCER - Video video_1174869156_1348.mp4 accepted. Queue pos: 3
+[2026-05-03 15:45:01,997] INFO - VIDEO_REQUEST - User 1174869156 sent video video_1174869156_1349.mp4
+[2026-05-03 15:45:02,105] INFO - LOAD_BALANCER - Video video_1174869156_1349.mp4 accepted. Queue pos: 4
+[2026-05-03 15:45:02,329] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1382.mp4
+[2026-05-03 15:45:02,485] INFO - LOAD_BALANCER - Video video_8437329115_1382.mp4 accepted. Queue pos: 5
+[2026-05-03 15:45:05,712] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1383.mp4
+[2026-05-03 15:45:05,892] INFO - LOAD_BALANCER - Video video_8437329115_1383.mp4 accepted. Queue pos: 6
+[2026-05-03 15:45:09,432] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1384.mp4
+[2026-05-03 15:45:09,546] INFO - LOAD_BALANCER - Video video_8437329115_1384.mp4 accepted. Queue pos: 7
+[2026-05-03 15:45:13,110] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1385.mp4
+[2026-05-03 15:45:13,180] INFO - LOAD_BALANCER - Video video_8437329115_1385.mp4 accepted. Queue pos: 8
+[2026-05-03 15:45:16,181] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1386.mp4
+[2026-05-03 15:45:16,265] INFO - LOAD_BALANCER - Video video_8437329115_1386.mp4 accepted. Queue pos: 9
+[2026-05-03 15:45:19,440] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1387.mp4
+[2026-05-03 15:45:19,588] INFO - LOAD_BALANCER - Video video_8437329115_1387.mp4 accepted. Queue pos: 10
+[2026-05-03 15:45:23,816] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1388.mp4
+[2026-05-03 15:45:23,819] CRITICAL - LOAD_BALANCER - Video queue full (10/10).
+[2026-05-03 15:45:26,788] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1389.mp4
+[2026-05-03 15:45:26,788] CRITICAL - LOAD_BALANCER - Video queue full (10/10).
+[2026-05-03 15:45:27,685] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_1390.mp4
+[2026-05-03 15:45:27,686] CRITICAL - LOAD_BALANCER - Video queue full (10/10).
+[2026-05-03 15:45:28,648] INFO - VIDEO_PROCESSING - Finished video_1174869156_1341.mp4. Defects found: 48
+[2026-05-03 15:45:28,659] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1346.mp4
+[2026-05-03 15:45:31,826] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:45:32,838] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 15:45:32,891] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:45:33,901] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 11 to 20).
+[2026-05-03 15:45:47,311] INFO - VIDEO_PROCESSING - Finished video_1174869156_1343.mp4. Defects found: 42
+[2026-05-03 15:45:47,344] INFO - VIDEO_PROCESSING - Finished video_1174869156_1342.mp4. Defects found: 55
+[2026-05-03 15:45:47,357] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1347.mp4
+[2026-05-03 15:45:49,130] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1348.mp4
+[2026-05-03 15:45:56,514] INFO - VIDEO_PROCESSING - Finished video_1174869156_1346.mp4. Defects found: 15
+[2026-05-03 15:45:57,014] INFO - VIDEO_PROCESSING - Started analyzing video_1174869156_1349.mp4
+[2026-05-03 15:46:01,245] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:02,252] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 18 to 27).
+[2026-05-03 15:46:02,291] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:03,297] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 28 to 37).
+[2026-05-03 15:46:03,330] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:04,337] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 38 to 47).
+[2026-05-03 15:46:04,368] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:05,375] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 48 to 57).
+[2026-05-03 15:46:09,563] INFO - VIDEO_PROCESSING - Finished video_1174869156_1345.mp4. Defects found: 64
+[2026-05-03 15:46:10,148] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1382.mp4
+[2026-05-03 15:46:11,904] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:12,913] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 57 to 66).
+[2026-05-03 15:46:13,004] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:14,013] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 67 to 76).
+[2026-05-03 15:46:14,060] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:15,065] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 77 to 86).
+[2026-05-03 15:46:15,097] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:16,105] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 87 to 96).
+[2026-05-03 15:46:20,296] INFO - VIDEO_PROCESSING - Finished video_1174869156_1344.mp4. Defects found: 66
+[2026-05-03 15:46:20,805] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1383.mp4
+[2026-05-03 15:46:31,151] INFO - VIDEO_PROCESSING - Finished video_1174869156_1348.mp4. Defects found: 34
+[2026-05-03 15:46:31,421] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:31,720] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1384.mp4
+[2026-05-03 15:46:32,430] CRITICAL - SECURITY - Anti-DDoS triggered. Queue full (94 + 10 > 100). DROP Malicious Batch from User 8437329115.
+[2026-05-03 15:46:32,434] INFO - BATCH_REQUEST - User 8437329115 sent 10 images
+[2026-05-03 15:46:33,441] CRITICAL - SECURITY - Anti-DDoS triggered. Queue full (94 + 10 > 100). DROP Malicious Batch from User 8437329115.
+[2026-05-03 15:47:04,461] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 15:47:04,743] INFO - VIDEO_PROCESSING - Finished video_1174869156_1349.mp4. Defects found: 78
+[2026-05-03 15:47:05,467] CRITICAL - SECURITY - Anti-DDoS triggered. Queue full (93 + 10 > 100). DROP Malicious Batch from User 1174869156.
+[2026-05-03 15:47:05,471] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 15:47:05,733] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1385.mp4
+[2026-05-03 15:47:06,478] CRITICAL - SECURITY - Anti-DDoS triggered. Queue full (93 + 10 > 100). DROP Malicious Batch from User 1174869156.
+[2026-05-03 15:47:16,499] INFO - BATCH_REQUEST - User 1174869156 sent 6 images
+[2026-05-03 15:47:17,508] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 6 queued (positions 94 to 99).
+[2026-05-03 15:47:17,537] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 15:47:18,545] CRITICAL - SECURITY - Anti-DDoS triggered. Queue full (99 + 10 > 100). DROP Malicious Batch from User 1174869156.
+[2026-05-03 15:47:35,724] INFO - VIDEO_PROCESSING - Finished video_8437329115_1382.mp4. Defects found: 90
+[2026-05-03 15:47:36,374] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1386.mp4
+[2026-05-03 15:47:36,696] INFO - VIDEO_PROCESSING - Finished video_1174869156_1347.mp4. Defects found: 128
+[2026-05-03 15:47:37,181] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_1387.mp4
+[2026-05-03 15:47:41,589] INFO - VIDEO_PROCESSING - Finished video_8437329115_1384.mp4. Defects found: 67
+[2026-05-03 15:47:42,080] INFO - CLEAN - No defects found in user_8437329115_1524. Image deleted.
+[2026-05-03 15:47:42,163] INFO - VIDEO_PROCESSING - Finished video_8437329115_1383.mp4. Defects found: 85
+[2026-05-03 15:47:48,233] INFO - CLEAN - No defects found in user_8437329115_1626. Image deleted.
+[2026-05-03 15:47:54,201] INFO - CLEAN - No defects found in user_8437329115_1640. Image deleted.
+[2026-05-03 15:48:14,540] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2391.mp4
+[2026-05-03 15:48:14,591] INFO - LOAD_BALANCER - Video video_8437329115_2391.mp4 accepted. Queue pos: 1
+[2026-05-03 15:48:16,125] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2392.mp4
+[2026-05-03 15:48:16,166] INFO - LOAD_BALANCER - Video video_8437329115_2392.mp4 accepted. Queue pos: 2
+[2026-05-03 15:48:17,786] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2393.mp4
+[2026-05-03 15:48:17,791] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2391.mp4
+[2026-05-03 15:48:17,871] INFO - LOAD_BALANCER - Video video_8437329115_2393.mp4 accepted. Queue pos: 3
+[2026-05-03 15:48:18,340] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2392.mp4
+[2026-05-03 15:48:21,062] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2394.mp4
+[2026-05-03 15:48:21,246] INFO - LOAD_BALANCER - Video video_8437329115_2394.mp4 accepted. Queue pos: 2
+[2026-05-03 15:48:23,845] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2395.mp4
+[2026-05-03 15:48:23,961] INFO - LOAD_BALANCER - Video video_8437329115_2395.mp4 accepted. Queue pos: 3
+[2026-05-03 15:48:26,276] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2396.mp4
+[2026-05-03 15:48:26,376] INFO - LOAD_BALANCER - Video video_8437329115_2396.mp4 accepted. Queue pos: 4
+[2026-05-03 15:48:28,173] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2397.mp4
+[2026-05-03 15:48:28,230] INFO - LOAD_BALANCER - Video video_8437329115_2397.mp4 accepted. Queue pos: 5
+[2026-05-03 15:48:31,490] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2398.mp4
+[2026-05-03 15:48:31,539] INFO - LOAD_BALANCER - Video video_8437329115_2398.mp4 accepted. Queue pos: 6
+[2026-05-03 15:48:33,186] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2399.mp4
+[2026-05-03 15:48:33,258] INFO - LOAD_BALANCER - Video video_8437329115_2399.mp4 accepted. Queue pos: 7
+[2026-05-03 15:48:46,994] INFO - VIDEO_PROCESSING - Finished video_8437329115_1385.mp4. Defects found: 72
+[2026-05-03 15:48:47,518] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2393.mp4
+[2026-05-03 15:49:20,607] INFO - VIDEO_PROCESSING - Finished video_8437329115_2391.mp4. Defects found: 48
+[2026-05-03 15:49:21,131] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2394.mp4
+[2026-05-03 15:49:27,672] INFO - VIDEO_PROCESSING - Finished video_8437329115_1387.mp4. Defects found: 69
+[2026-05-03 15:49:28,159] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2395.mp4
+[2026-05-03 15:49:30,116] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2650.mp4
+[2026-05-03 15:49:30,370] INFO - LOAD_BALANCER - Video video_8437329115_2650.mp4 accepted. Queue pos: 5
+[2026-05-03 15:49:32,916] INFO - VIDEO_PROCESSING - Finished video_8437329115_2392.mp4. Defects found: 55
+[2026-05-03 15:49:33,182] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2651.mp4
+[2026-05-03 15:49:33,288] INFO - LOAD_BALANCER - Video video_8437329115_2651.mp4 accepted. Queue pos: 6
+[2026-05-03 15:49:37,157] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2652.mp4
+[2026-05-03 15:49:37,236] INFO - LOAD_BALANCER - Video video_8437329115_2652.mp4 accepted. Queue pos: 7
+[2026-05-03 15:49:39,935] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2653.mp4
+[2026-05-03 15:49:40,008] INFO - LOAD_BALANCER - Video video_8437329115_2653.mp4 accepted. Queue pos: 8
+[2026-05-03 15:49:42,606] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2654.mp4
+[2026-05-03 15:49:42,680] INFO - LOAD_BALANCER - Video video_8437329115_2654.mp4 accepted. Queue pos: 9
+[2026-05-03 15:49:44,176] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2396.mp4
+[2026-05-03 15:49:46,117] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2655.mp4
+[2026-05-03 15:49:46,299] INFO - LOAD_BALANCER - Video video_8437329115_2655.mp4 accepted. Queue pos: 9
+[2026-05-03 15:49:49,415] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2656.mp4
+[2026-05-03 15:49:49,561] INFO - LOAD_BALANCER - Video video_8437329115_2656.mp4 accepted. Queue pos: 10
+[2026-05-03 15:49:53,106] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2657.mp4
+[2026-05-03 15:49:53,107] CRITICAL - LOAD_BALANCER - Video queue full (10/10).
+[2026-05-03 15:49:53,717] INFO - VIDEO_PROCESSING - Finished video_8437329115_2393.mp4. Defects found: 42
+[2026-05-03 15:49:54,081] INFO - VIDEO_REQUEST - User 8437329115 sent video video_8437329115_2658.mp4
+[2026-05-03 15:49:54,082] CRITICAL - LOAD_BALANCER - Video queue full (10/10).
+[2026-05-03 15:49:54,207] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2397.mp4
+[2026-05-03 15:49:59,363] INFO - VIDEO_PROCESSING - Finished video_8437329115_1386.mp4. Defects found: 99
+[2026-05-03 15:49:59,914] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2398.mp4
+[2026-05-03 15:50:05,654] INFO - VIDEO_PROCESSING - Finished video_8437329115_2396.mp4. Defects found: 15
+[2026-05-03 15:50:14,176] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2399.mp4
+[2026-05-03 15:50:55,119] INFO - VIDEO_PROCESSING - Finished video_8437329115_2398.mp4. Defects found: 34
+[2026-05-03 15:50:55,491] INFO - VIDEO_PROCESSING - Finished video_8437329115_2395.mp4. Defects found: 64
+[2026-05-03 15:50:55,497] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2650.mp4
+[2026-05-03 15:50:56,018] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2651.mp4
+[2026-05-03 15:51:05,670] INFO - VIDEO_PROCESSING - Finished video_8437329115_2394.mp4. Defects found: 66
+[2026-05-03 15:51:07,338] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2652.mp4
+[2026-05-03 15:51:21,761] INFO - VIDEO_PROCESSING - Finished video_8437329115_2399.mp4. Defects found: 78
+[2026-05-03 15:51:22,241] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2653.mp4
+[2026-05-03 15:51:39,379] INFO - VIDEO_PROCESSING - Finished video_8437329115_2397.mp4. Defects found: 128
+[2026-05-03 15:51:39,817] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2654.mp4
+[2026-05-03 15:51:51,199] INFO - VIDEO_PROCESSING - Finished video_8437329115_2651.mp4. Defects found: 85
+[2026-05-03 15:51:51,662] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2655.mp4
+[2026-05-03 15:51:51,899] INFO - VIDEO_PROCESSING - Finished video_8437329115_2652.mp4. Defects found: 67
+[2026-05-03 15:51:52,556] INFO - VIDEO_PROCESSING - Started analyzing video_8437329115_2656.mp4
+[2026-05-03 15:51:55,710] INFO - VIDEO_PROCESSING - Finished video_8437329115_2650.mp4. Defects found: 90
+[2026-05-03 15:52:10,107] INFO - VIDEO_PROCESSING - Finished video_8437329115_2653.mp4. Defects found: 72
+[2026-05-03 15:52:11,112] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 15:52:39,332] INFO - VIDEO_PROCESSING - Finished video_8437329115_2655.mp4. Defects found: 69
+[2026-05-03 15:52:43,777] INFO - VIDEO_PROCESSING - Finished video_8437329115_2654.mp4. Defects found: 99
+[2026-05-03 15:52:44,560] INFO - VIDEO_PROCESSING - Finished video_8437329115_2656.mp4. Defects found: 75
+[2026-05-03 15:53:40,618] INFO - BATCH_REQUEST - User 8437329115 sent 1 images
+[2026-05-03 15:53:41,625] INFO - LOAD_BALANCER - Batch accepted. 1 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 15:54:11,451] INFO - BATCH_REQUEST - User 1174869156 sent 1 images
+[2026-05-03 15:54:12,458] INFO - LOAD_BALANCER - Batch accepted. 1 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 17:39:35,335] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:39:36,506] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:39:43,832] INFO - CLEAN - No defects found in user_1174869156_2940. Image deleted.
+[2026-05-03 17:40:00,104] INFO - RETRAINING - There is not enough data for continual learning, the current count: 0/5
+[2026-05-03 17:40:05,826] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:06,833] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:40:06,930] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:07,938] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:40:15,925] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:16,931] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:40:17,074] INFO - BATCH_REQUEST - User 1174869156 sent 6 images
+[2026-05-03 17:40:17,480] INFO - CLEAN - No defects found in user_1174869156_2998. Image deleted.
+[2026-05-03 17:40:18,083] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 6 queued (positions 1 to 6).
+[2026-05-03 17:40:18,154] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:19,176] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:40:19,298] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:20,322] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:40:20,363] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:21,373] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:40:21,406] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:22,412] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 2 to 11).
+[2026-05-03 17:40:26,641] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:27,648] INFO - LOAD_BALANCER - Batch accepted. 3 to GPU immediately, 7 queued (positions 1 to 7).
+[2026-05-03 17:40:29,811] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:30,818] INFO - LOAD_BALANCER - Batch accepted. 4 to GPU immediately, 6 queued (positions 1 to 6).
+[2026-05-03 17:40:30,923] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:31,932] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 7 to 16).
+[2026-05-03 17:40:31,966] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:32,972] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 17 to 26).
+[2026-05-03 17:40:33,005] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:34,009] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 27 to 36).
+[2026-05-03 17:40:39,618] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:40,624] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 12 to 21).
+[2026-05-03 17:40:40,659] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:40:41,665] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 22 to 31).
+[2026-05-03 17:42:27,646] INFO - FEEDBACK - User confirmed user_1174869156_3179. Moved to training set.
+[2026-05-03 17:42:34,633] INFO - FEEDBACK - User confirmed user_1174869156_3178. Moved to training set.
+[2026-05-03 17:42:43,221] INFO - FEEDBACK - User confirmed user_1174869156_3176. Moved to training set.
+[2026-05-03 17:43:29,362] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:43:30,369] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:43:39,434] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:43:40,440] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:43:58,478] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:43:59,484] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:43:59,592] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:00,601] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:44:00,715] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:01,727] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 3 to 12).
+[2026-05-03 17:44:01,772] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:02,782] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 2 to 11).
+[2026-05-03 17:44:08,775] INFO - BATCH_REQUEST - User 1174869156 sent 2 images
+[2026-05-03 17:44:09,782] INFO - LOAD_BALANCER - Batch accepted. 2 to GPU immediately, 0 queued (positions 1 to 0).
+[2026-05-03 17:44:09,802] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:10,811] INFO - LOAD_BALANCER - Batch accepted. 3 to GPU immediately, 7 queued (positions 1 to 7).
+[2026-05-03 17:44:10,868] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:11,881] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:44:11,948] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:12,957] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:44:13,038] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:14,055] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:44:29,112] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:30,119] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:44:30,177] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:31,185] INFO - LOAD_BALANCER - Batch accepted. 0 to GPU immediately, 10 queued (positions 1 to 10).
+[2026-05-03 17:44:31,578] INFO - CLEAN - No defects found in user_1174869156_3486. Image deleted.
+[2026-05-03 17:44:33,333] INFO - BATCH_REQUEST - User 1174869156 sent 10 images
+[2026-05-03 17:44:34,336] INFO - LOAD_BALANCER - Batch accepted. 5 to GPU immediately, 5 queued (positions 1 to 5).
+[2026-05-03 17:44:34,401] INFO - CLEAN - No defects found in user_1174869156_3495. Image deleted.
+[2026-05-03 17:44:34,422] INFO - CLEAN - No defects found in user_1174869156_3498. Image deleted.
